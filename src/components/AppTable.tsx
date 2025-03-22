@@ -29,6 +29,14 @@ const useStyles = makeStyles()((theme) => {
       zIndex: 2,
       transform: "translate3d(0, 0, 0)",
     },
+    rowHover: {
+      cursor: "pointer",
+      position: "relative",
+
+      "&:hover": {
+        backgroundColor: "#ebebeb", // 鼠标悬停变色
+      },
+    },
   };
 });
 
@@ -49,6 +57,7 @@ interface TableProps<RecordType> {
     selectedRowKeys: React.Key[];
     onChange: (selectedRowKeys: React.Key[]) => void;
   };
+  rowOnClick?: (row: RecordType) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,6 +69,7 @@ const AppTable = <RecordType extends RecordTypeInterface>({
   columns,
   dataSource,
   rowSelection,
+  rowOnClick,
 }: TableProps<RecordType>) => {
   const { classes } = useStyles();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(
@@ -128,7 +138,13 @@ const AppTable = <RecordType extends RecordTypeInterface>({
       </thead>
       <tbody>
         {dataSource.map((row) => (
-          <tr key={row.key}>
+          <tr
+            key={row.key}
+            className={rowOnClick && !rowSelection ? classes.rowHover : ""}
+            onClick={() => {
+              if (rowOnClick) rowOnClick(row);
+            }}
+          >
             {rowSelection && (
               <td className={classes.checkbox}>
                 <Checkbox
